@@ -45,9 +45,9 @@ wiki = WikipediaAPIWrapper()
         # replace SequentialChain with 
 
 if prompt: # if prompt, run it and show response
-    response = title_chain(topic=prompt) # set "topic" in template to what was prompted
+    response = title_chain.run(prompt) # set "topic" in template to what was prompted
     wiki_research = wiki.run(prompt)
-    script = script_chain(title=title, wikipedia_research=wiki_research)
+    script = script_chain.run(title=title, wikipedia_research=wiki_research)
 
     st.write(title)
     st.write(script)
