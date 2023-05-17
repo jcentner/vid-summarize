@@ -4,7 +4,7 @@ from apikey import apikey
 import streamlit as st
 from langchain.llms import OpenAI
 from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain, SimpleSequentialChain
+from langchain.chains import LLMChain, SequentialChain
 
 """
 pip install streamlit langchain openai wikipedia chromadb tiktoken (yt-dl?)
@@ -30,10 +30,13 @@ script_template = PromptTemplate(
 # LLMs
 
 llm = OpenAi(temperature=0.9)
-title_chain = LLMChain(llm=llm, prompt=title_template, verbose=True)
-script_chain = LLMChain(llm=llm, prompt=script_template, verbose=True)
-sequential_chain = SimpleSequentialChain(chains=[title_chain, script_chain]) # pass output from title_chain to script_chain
+title_chain = LLMChain(llm=llm, prompt=title_template, verbose=True, output_key='title')
+script_chain = LLMChain(llm=llm, prompt=script_template, verbose=True, output_key='script')
+sequential_chain = SequentialChain(chains=[title_chain, script_chain], input_variables=['topaic'], output_variables=['title', 'script') 
+        # pass output from title_chain to script_chain
+        # replace SimpleSequentialChain (1 output) to SequentialChain (multi-output)
 
 if prompt: # if prompt, run it and show response
-    response = sequential_chain.run(topic=prompt) # set "topic" in template to what was prompted
-    st.write(response)
+    response = sequential_chain({'topic':prompt}) # set "topic" in template to what was prompted
+    st.write(response['title'])
+    st.write(response['script'])
